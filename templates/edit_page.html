@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            background: #007bff;
+            color: #fff;
+            padding: 1rem;
+            margin: 0;
+        }
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-family: monospace;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 0.7rem;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #0056b3;
+        }
+        .controls {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .control-button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .control-button:hover {
+            background-color: #0056b3;
+        }
+        .control-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        iframe {
+            display: block;
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+            margin-top: 1rem;
+            border-radius: 4px;
+            max-width: 100%; /* Ensures the iframe never exceeds container width */
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Page: {{ page.name }}</h1>
+    <main>
+        <form method="POST">
+            <textarea id="content" name="content" placeholder="Write your HTML here">{{ page.content }}</textarea>
+            <button type="submit">Save</button>
+        </form>
+        <div class="controls">
+            <button id="mobileButton" class="control-button" onclick="setIframeSize('mobile')">Mobile</button>
+            <button id="tabletButton" class="control-button" onclick="setIframeSize('tablet')">Tablet</button>
+            <button id="desktopButton" class="control-button" onclick="setIframeSize('desktop')">Desktop</button>
+        </div>
+        <iframe id="preview"></iframe>
+    </main>
+
+    <script>
+        const contentInput = document.getElementById('content');
+        const previewIframe = document.getElementById('preview');
+        const mobileButton = document.getElementById('mobileButton');
+        const tabletButton = document.getElementById('tabletButton');
+        const desktopButton = document.getElementById('desktopButton');
+
+        // Function to update iframe content
+        function updatePreview() {
+            const content = contentInput.value;
+            const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(`<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 10px; }
+                        h1, h2 { margin-bottom: 10px; }
+                        p { margin-bottom: 10px; line-height: 1.5; }
+                        a { color: blue; text-decoration: underline; }
+                    </style>
+                </head>
+                <body>${content}</body>
+                </html>`);
+            iframeDoc.close();
+        }
+
+        // Update preview as user types
+        contentInput.addEventListener('input', updatePreview);
+
+        // Initialize preview with existing content
+        updatePreview();
+
+        // Function to set iframe size for different devices
+        function setIframeSize(device) {
+            const sizes = {
+                mobile: { width: 375, height: 667 },
+                tablet: { width: 768, height: 1024 },
+                desktop: { width: 1366, height: 768 },
+            };
+
+            const { width, height } = sizes[device];
+            const screenWidth = window.innerWidth;
+
+            if (width <= screenWidth) {
+                previewIframe.style.width = `${width}px`;
+                previewIframe.style.height = `${height}px`;
+            }
+        }
+
+        // Disable buttons if screen is too small
+        function updateButtonStates() {
+            const screenWidth = window.innerWidth;
+            mobileButton.disabled = screenWidth < 375;
+            tabletButton.disabled = screenWidth < 768;
+            desktopButton.disabled = screenWidth < 1366;
+        }
+
+        // Update button states on load and resize
+        window.addEventListener('load', updateButtonStates);
+        window.addEventListener('resize', updateButtonStates);
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #007bff;
+            color: #fff;
+            padding: 1rem 2rem;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        nav {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        nav a {
+            text-decoration: none;
+            color: #007bff;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #0056b3;
+        }
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.3rem;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 0.5rem 0;
+        }
+        ul li a {
+            text-decoration: none;
+            color: #333;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        ul li a:hover {
+            background-color: #f0f0f0;
+        }
+        .btn {
+            display: inline-block;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <nav>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    <main>
+        <h2>Pages</h2>
+        <ul>
+            {% for page in pages %}
+                <li><a href="{{ url_for('edit_page', page_id=page.id) }}">{{ page.name }}</a></li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('create_page') }}" class="btn">Create Page</a>
+    </main>
+</body>
+</html>
