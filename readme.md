@@ -62,7 +62,7 @@ On the first run, the app will create a default user (`admin`) with the password
 ![Login Page](examples/login.png)
 
 ### HTML Editor:
-![HTML Editor](examples/htmk.png)
+![HTML Editor](examples/html.png)
 
 ### Example Page:
 ![Example Page](examples/example%20page.png)
