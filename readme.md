@@ -88,7 +88,3 @@ On the first run, the app will create a default user (`admin`) with the password
 ## Contributing
 
 Feel free to fork this repository and submit pull requests. Contributions are welcome!
-
-## License
-
-This project is licensed under the MIT License.
