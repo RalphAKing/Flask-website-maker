@@ -8,6 +8,11 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pages.db'
 db = SQLAlchemy(app)
+app.config['UPLOAD_FOLDER'] = 'static/images/'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -92,17 +97,47 @@ def create_page():
             return redirect(url_for('edit_page', page_id=new_page.id))
     return render_template('create_page.html')
 
+def get_all_images():
+    images_path = app.config['UPLOAD_FOLDER']
+    return [f for f in os.listdir(images_path) if allowed_file(f)]
+
 @app.route('/admin/edit_page/<int:page_id>', methods=['GET', 'POST'])
 def edit_page(page_id):
     if 'user_id' not in session:
         flash('Please log in to access the admin page.', 'warning')
         return redirect(url_for('login'))
     page = Page.query.get_or_404(page_id)
+    images = [{'name': img, 'path': url_for('static', filename=f'images/{img}')} for img in get_all_images()]
     if request.method == 'POST':
         page.content = request.form['content']
         db.session.commit()
         flash('Page updated successfully!', 'success')
-    return render_template('edit_page.html', page=page)
+    return render_template('edit_page.html', page=page, images=images)
+
+
+@app.route('/admin/upload_image', methods=['POST'])
+def upload_image():
+    if 'user_id' not in session:
+        flash('Please log in to access the admin page.', 'warning')
+        return redirect(url_for('login'))
+
+    if 'file' not in request.files:
+        flash('No file part in the request.', 'danger')
+        return redirect(request.referrer)
+
+    file = request.files['file']
+    if file.filename == '':
+        flash('No file selected for uploading.', 'danger')
+        return redirect(request.referrer)
+
+    if file and allowed_file(file.filename):
+        filename = file.filename
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash('Image uploaded successfully!', 'success')
+    else:
+        flash('Allowed file types are png, jpg, jpeg, gif.', 'danger')
+    return redirect(request.referrer)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -90,6 +90,41 @@
 <body>
     <h1>Edit Page: {{ page.name }}</h1>
     <main>
+        <form action="{{ url_for('upload_image') }}" method="POST" enctype="multipart/form-data">
+            <label for="file">Upload an Image:</label>
+            <input type="file" name="file" id="file">
+            <button type="submit">Upload</button>
+        </form>
+        <h2>Available Images</h2>
+        <div>
+            <button id="toggleDropdown" onclick="toggleImages()">Show Images</button>
+        </div>
+
+        <div id="imagesArea" style="display: none; margin-top: 1rem; text-align: center;">
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                {% for image in images %}
+                <div style="text-align: center; max-width: 150px;">
+                    <img src="{{ image.path }}" alt="{{ image.name }}" style="width: 100%; height: auto; max-height: 150px; display: block;">
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; word-wrap: break-word;">Path: {{ image.path }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <script>
+        function toggleImages() {
+            const imagesArea = document.getElementById('imagesArea');
+            const toggleButton = document.getElementById('toggleDropdown');
+
+            if (imagesArea.style.display === 'none') {
+                imagesArea.style.display = 'block';
+                toggleButton.textContent = 'Hide Images';
+            } else {
+                imagesArea.style.display = 'none';
+                toggleButton.textContent = 'Show Images';
+            }
+        }
+        </script>
         <form method="POST">
             <textarea id="content" name="content" placeholder="Write your HTML here">{{ page.content }}</textarea>
             <button type="submit">Save</button>
@@ -109,7 +144,6 @@
         const tabletButton = document.getElementById('tabletButton');
         const desktopButton = document.getElementById('desktopButton');
 
-        // Function to update iframe content
         function updatePreview() {
             const content = contentInput.value;
             const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
@@ -131,13 +165,9 @@
             iframeDoc.close();
         }
 
-        // Update preview as user types
         contentInput.addEventListener('input', updatePreview);
-
-        // Initialize preview with existing content
         updatePreview();
 
-        // Function to set iframe size for different devices
         function setIframeSize(device) {
             const sizes = {
                 mobile: { width: 375, height: 667 },
@@ -154,7 +184,6 @@
             }
         }
 
-        // Disable buttons if screen is too small
         function updateButtonStates() {
             const screenWidth = window.innerWidth;
             mobileButton.disabled = screenWidth < 375;
@@ -162,7 +191,6 @@
             desktopButton.disabled = screenWidth < 1366;
         }
 
-        // Update button states on load and resize
         window.addEventListener('load', updateButtonStates);
         window.addEventListener('resize', updateButtonStates);
     </script>
